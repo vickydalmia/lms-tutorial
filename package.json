@@ -9,7 +9,8 @@
     "lint": "next lint",
     "db:pull": "dotenv -e .env.local -- npx prisma db pull",
     "db:generate": "dotenv -e .env.local -- npx prisma generate",
-    "db:push":"dotenv -e .env.local -- npx prisma db push"
+    "db:push": "dotenv -e .env.local -- npx prisma db push",
+    "db:studio": "npx prism studio"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.9.5",
