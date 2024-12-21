@@ -5,6 +5,7 @@ import { LayoutDashboard } from "lucide-react";
 import { redirect } from "next/navigation";
 import { TitleForm } from "./_components/title-form";
 import { DescriptionForm } from "./_components/description-form";
+import { ImageForm } from "./_components/image-form";
 
 interface CourseIDPageProps {
   params: Promise<{ courseId: string }>;
@@ -57,14 +58,9 @@ export default async function CourseIDPage({ params }: CourseIDPageProps) {
             <IconBadge icon={LayoutDashboard} />
             <h1 className="text-xl">Customize your course</h1>
           </div>
-          <TitleForm
-            initialData={course}
-            courseId={course.id}
-            />
-            <DescriptionForm
-            initialData={course}
-            courseId={course.id}
-            />
+          <TitleForm initialData={course} courseId={course.id} />
+          <DescriptionForm initialData={course} courseId={course.id} />
+          <ImageForm initialData={course} courseId={course.id} />
         </div>
       </div>
     </div>
