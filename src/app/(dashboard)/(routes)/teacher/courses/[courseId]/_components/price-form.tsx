@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { formatPrice } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Course } from "@prisma/client";
 import axios from "axios";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -21,14 +22,12 @@ import toast from "react-hot-toast";
 import { z } from "zod";
 
 interface PriceFormProps {
-  initialData: {
-    price: string | null;
-  };
+  initialData: Course;
   courseId: string;
 }
 
 const formSchema = z.object({
-  price: z.string().min(1, {
+  price: z.number().min(0, {
     message: "Price is required",
   }),
 });
@@ -39,7 +38,7 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      price: initialData.price ? initialData.price : undefined,
+      price: initialData.price ? initialData.price : 0,
     },
   });
 
@@ -95,11 +94,15 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
                 <FormItem>
                   <FormControl>
                     <Input
+                      {...field}
                       disabled={isSubmitting}
                       type="number"
-                      step={0.01}
                       placeholder="e.g enter the course price..."
-                      {...field}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value ? e.target.valueAsNumber : 0
+                        )
+                      }
                     />
                   </FormControl>
                   <FormMessage />

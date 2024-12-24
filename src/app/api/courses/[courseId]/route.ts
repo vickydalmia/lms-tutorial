@@ -14,8 +14,6 @@ export async function PATCH(
     const values = await req.json();
 
     const { courseId } = await params;
-
-    console.log(courseId);
     const course = await db.course.update({
       where: {
         id: courseId,
@@ -26,5 +24,7 @@ export async function PATCH(
       },
     });
     return NextResponse.json(course, { status: 202 });
-  } catch (e: any) {}
+  } catch (e: any) {
+    console.log(e);
+  }
 }
