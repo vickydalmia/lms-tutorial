@@ -73,3 +73,73 @@ export async function PATCH(
     return NextResponse.json(e.message, { status: 500 });
   }
 }
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
+) {
+  try {
+    const { userId } = await auth();
+    if (!userId) return NextResponse.json("unauthenticated", { status: 401 });
+
+    const { chapterId, courseId } = await params;
+    const ownCourse = db.course.findUnique({
+      where: {
+        userId,
+        id: courseId,
+      },
+    });
+    if (!ownCourse) return NextResponse.json("unauthorized", { status: 403 });
+    const chapter = await db.chapter.findUnique({
+      where: {
+        id: chapterId,
+        courseId: courseId,
+      },
+    });
+
+    if (!chapter) return NextResponse.json("not found", { status: 404 });
+
+    if (chapter.videoUrl) {
+      const existingMuxData = await db.muxData.findFirst({
+        where: {
+          chapterId: chapterId,
+        },
+      });
+      if (existingMuxData) {
+        await video.assets.delete(existingMuxData.assetId);
+        await db.muxData.delete({
+          where: {
+            id: existingMuxData.id,
+          },
+        });
+      }
+    }
+    await db.chapter.delete({
+      where: {
+        id: chapterId,
+        courseId: courseId,
+      },
+    });
+
+    const publishedChapterInCourse = await db.chapter.findMany({
+      where: {
+        courseId: chapterId,
+        isPublished: true,
+      },
+    });
+    if (!publishedChapterInCourse) {
+      await db.course.update({
+        where: {
+          id: courseId,
+        },
+        data: {
+          isPublished: false,
+        },
+      });
+    }
+
+    return NextResponse.json("deleted", { status: 201 });
+  } catch (e: any) {
+    return NextResponse.json(e.message, { status: 500 });
+  }
+}
