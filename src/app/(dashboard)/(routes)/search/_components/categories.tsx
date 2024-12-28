@@ -31,6 +31,7 @@ export const Categories = ({ items }: Categoriesprops) => {
     <div className="flex items-center gap-x-2 overflow-x-auto pb-2">
       {items.map((item) => (
         <CategoryItem
+          key={item.id}
           label={item.name}
           icon={iconMap[item.name]}
           value={item.id}
